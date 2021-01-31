@@ -1,10 +1,15 @@
 <template>
     <div class="relative">
+            <div v-show="typing" class="help-block" style="font-style: italic;">
+                {{ user}} sta scrivendo...
+            </div>
         <div class="grid grid-cols-6 input-box" >
+
             <input 
             type="text"
             v-model="message"
             @keyup.enter= "sendMessage()"
+            @keydown="isTyping"
             placeholder="Scrivi qui.."
             class="col-span-5 outline-none      "
             />
@@ -14,6 +19,7 @@
             >
               Invia
             </button>
+
         </div>
        
     </div>
@@ -21,11 +27,13 @@
 
 <script>
 export default {
-    props : ['room'],
+    props : ['room', 'user_name'],
 
     data() {
         return {
-            message : ''
+            message : '',
+            user: this.user_name,
+            typing: false
         }
     },
     methods : {
@@ -47,7 +55,38 @@ export default {
                     console.log(error);
                 })         
 
-        }
+        },
+        isTyping() {
+            let channel = Echo.private('pippo');
+            let userName = this.user_name;
+            
+            function setTimeout(userName) {
+                channel.whisper('typing', {
+                
+                user: userName,
+                typing: true
+                });
+                
+            };
+
+            setTimeout(userName, 300);
+        },
+    },
+    created() {
+            
+            let _this = this;
+
+        Echo.private('pippo')
+            .listenForWhisper('typing', (e) => {
+            this.user = e.user;
+            this.typing = e.typing;
+           
+
+            // remove is typing indicator after 0.9s
+            setTimeout(function() {
+                _this.typing = false
+            }, 1900);
+        });
     }
 }
 </script>

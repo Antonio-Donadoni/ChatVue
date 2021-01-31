@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 
 use App\Models\ChatRoom;
 use App\Models\ChatMessage;
+use App\Models\User;
 
 use App\Events\NewChatMessage;
 
@@ -23,6 +24,13 @@ class chatController extends Controller
                         ->orderBy('created_at', 'DESC')
                         ->get();
          $userId = Auth::id();
+         $users = User::all();
+
+         foreach ($users as  $user) {
+             if ($userId == $user-> id) {
+                 $username = $user -> name ;
+             }
+         }
 
         foreach ($chatMessages as $message) {
             $hour = Carbon::parse($message->created_at)->format('H:i');
@@ -35,7 +43,7 @@ class chatController extends Controller
          
          
          
-         return [$chatMessages, $userId];
+         return [$chatMessages, $userId, $username];
     } 
     public function newMessage (Request $request, $roomId) {
         $newMessage = new ChatMessage;

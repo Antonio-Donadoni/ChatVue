@@ -20,6 +20,7 @@
                    :user_id = "user_id" />
                    <input-message 
                    :room = "currentRoom"
+                   :user_name = "user_name"
                    v-on:messageSent="getMessages()" />
                 </div>
             </div>
@@ -51,7 +52,8 @@
                 chatRooms : [],
                 currentRoom : [],
                 messages : [],
-                user_id : []
+                user_id : [],
+                user_name : []
             }
         },
 
@@ -99,7 +101,9 @@
             getMessages() {
                 axios.get('/chat/room/' +  this.currentRoom.id + '/messages')
                 .then( response => {
-                    this.user_id = response.data[1];       
+                    this.user_id = response.data[1];  
+                    this.user_name = response.data[2];
+                     
                     this.messages = response.data[0];  
                           
                 })
@@ -112,6 +116,7 @@
 
         created() {
             this.getRooms();
+ 
         }
     }
 </script>
